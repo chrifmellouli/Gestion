@@ -5,6 +5,7 @@ HELP.md
 HELP.md
 mvnw
 mvnw.cmd
+.attach_*
 ### STS ###
 .apt_generated
 .classpath
