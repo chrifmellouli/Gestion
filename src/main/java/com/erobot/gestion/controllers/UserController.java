@@ -88,19 +88,7 @@ public class UserController extends SecurityController {
 		if (hasPermission() == 2) {
 			User user = new User();
 			int roleId = Integer.parseInt(request.getParameter("role"));
-			if ((userDao.findById(roleId) != null)
-					&& (userDao.findById(roleId).getRole().getRoleUser().equalsIgnoreCase("root"))) {
-				attributeRightsForCurrentUser(map);
-				modelMap.addAllAttributes(map);
-				return MainController.PAGE_403;
-			}
 			user.setUsername(request.getParameter(REQUEST_USER_NAME));
-			if ((userDao.findById(roleId) != null)
-					&& (request.getParameter(REQUEST_USER_NAME).equalsIgnoreCase("root"))) {
-				attributeRightsForCurrentUser(map);
-				modelMap.addAllAttributes(map);
-				return MainController.PAGE_403;
-			}
 			try {
 				user.setPassword(request.getParameter("password"));
 			} catch (NoSuchAlgorithmException e1) {
@@ -142,9 +130,6 @@ public class UserController extends SecurityController {
 			return MainController.LOGIN;
 		}
 		if (hasPermission() == 2) {
-			if (userDao.findById(id).getUsername().equalsIgnoreCase("root")) {
-				return MainController.PAGE_403;
-			}
 			String error = new String("");
 			if (MainController.roleUser.getId() == id) {
 				error = error.concat("current");
@@ -176,12 +161,6 @@ public class UserController extends SecurityController {
 		if (!checkLogin()) {
 			return MainController.LOGIN;
 		}
-		if (userDao.findById(id).getUsername().equalsIgnoreCase("root")) {
-			Map<String, Object> map = new HashMap<>();
-			attributeRightsForCurrentUser(map);
-			modelMap.addAllAttributes(map);
-			return MainController.PAGE_403;
-		}
 		User user = userDao.findById(id);
 		List<Role> roles = roleDao.findAll();
 		Map<String, Object> map = new HashMap<>();
@@ -198,30 +177,11 @@ public class UserController extends SecurityController {
 		if (!checkLogin()) {
 			return MainController.LOGIN;
 		}
-		if (userDao.findById(id).getUsername().equalsIgnoreCase("root")) {
-			Map<String, Object> map = new HashMap<>();
-			attributeRightsForCurrentUser(map);
-			modelMap.addAllAttributes(map);
-			return MainController.PAGE_403;
-		}
 		Map<String, Object> map = new HashMap<>();
 		if (hasPermission() == 2) {
 			User user = userDao.findById(id);
 			int roleId = Integer.parseInt(request.getParameter("role"));
-			if ((userDao.findById(roleId) != null)
-					&& (userDao.findById(roleId).getRole().getRoleUser().equalsIgnoreCase("root"))) {
-				attributeRightsForCurrentUser(map);
-				modelMap.addAllAttributes(map);
-				return MainController.PAGE_403;
-			}
 			user.setUsername(request.getParameter(REQUEST_USER_NAME));
-			if ((userDao.findById(roleId) != null)
-					&& (request.getParameter(REQUEST_USER_NAME).equalsIgnoreCase("root"))) {
-				attributeRightsForCurrentUser(map);
-				modelMap.addAllAttributes(map);
-				return MainController.PAGE_403;
-
-			}
 			try {
 				user.setPassword(request.getParameter("password"));
 			} catch (NoSuchAlgorithmException e1) {
