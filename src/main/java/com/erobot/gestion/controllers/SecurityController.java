@@ -25,7 +25,7 @@ import com.erobot.gestion.models.Privilege;
  *
  */
 @Controller
-public class SecurityController {
+public class SecurityController{
 
 	protected UserDao userDao;
 	protected AuthorizationDao authorizationDao;
@@ -118,4 +118,5 @@ public class SecurityController {
 		map.put(MainController.ATTR_PRIVILEGES, listPermissions());
 		map.put(MainController.ATTR_PERMISSION, hasPermission());
 	}
+
 }

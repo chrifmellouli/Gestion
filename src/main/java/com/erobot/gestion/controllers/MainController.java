@@ -3,6 +3,7 @@
  */
 package com.erobot.gestion.controllers;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,14 +74,9 @@ public class MainController extends SecurityController {
 			return LOGIN;
 		}
 		Map<String, Object> map = new HashMap<>();
-		map.put(ATTR_PRIVILEGES, listPermissions());
 		map.put(ATTR_TOKEN, getToken(25));
-		map.put(COUNT_USERS, userDao.findAll().size());
-		map.put(COUNT_USERS_CONNECTED, userDao.findByIs(1).size());
-		map.put(COUNT_CATEGORIES, categoryDao.findAll().size());
-		map.put(COUNT_PRODCUTS, productDao.findAll().size());
-		map.put(COUNT_CUSTOMERS, customerDao.findAll().size());
 		map.put(MainController.USER, MainController.roleUser);
+		pullStatisticIndexAttributes(map);
 		modelMap.addAllAttributes(map);
 		return INDEX;
 	}
@@ -91,14 +87,9 @@ public class MainController extends SecurityController {
 			return LOGIN;
 		} else {
 			Map<String, Object> map = new HashMap<>();
-			map.put(ATTR_PRIVILEGES, listPermissions());
 			map.put(ATTR_TOKEN, getToken(25));
-			map.put(COUNT_USERS, userDao.findAll().size());
-			map.put(COUNT_USERS_CONNECTED, userDao.findByIs(1).size());
-			map.put(COUNT_CATEGORIES, categoryDao.findAll().size());
-			map.put(COUNT_PRODCUTS, productDao.findAll().size());
-			map.put(COUNT_CUSTOMERS, customerDao.findAll().size());
 			map.put(MainController.USER, MainController.roleUser);
+			pullStatisticIndexAttributes(map);
 			modelMap.addAllAttributes(map);
 			return INDEX;
 		}
@@ -133,19 +124,21 @@ public class MainController extends SecurityController {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		boolean iCanAccess;
-		User user = userDao.findByUsernameAndPassword(username, password);
+		User user;
+		Map<String, Object> map = new HashMap<>();
+		try {
+			user = userDao.findByUsernameAndPassword(username, User.getMD5Hash(password));
+		} catch (NoSuchAlgorithmException e) {
+			String authentification = "authentification failed";
+			modelMap.addAttribute("authentification", authentification);
+			return LOGIN;
+		}
 		iCanAccess = user != null;
 		if (iCanAccess) {
 			user.setIs(1);
 			userDao.save(user);
 			roleUser = user;
-			Map<String, Object> map = new HashMap<>();
-			map.put(ATTR_PRIVILEGES, listPermissions());
-			map.put(COUNT_USERS, userDao.findAll().size());
-			map.put(COUNT_USERS_CONNECTED, userDao.findByIs(1).size());
-			map.put(COUNT_CATEGORIES, categoryDao.findAll().size());
-			map.put(COUNT_PRODCUTS, productDao.findAll().size());
-			map.put(COUNT_CUSTOMERS, customerDao.findAll().size());
+			pullStatisticIndexAttributes(map);
 			map.put(USER, userDao.findById(user.getId()));
 			modelMap.addAllAttributes(map);
 			return INDEX;
@@ -154,6 +147,18 @@ public class MainController extends SecurityController {
 			modelMap.addAttribute("authentification", authentification);
 			return LOGIN;
 		}
+	}
+
+	/**
+	 * @param map
+	 */
+	protected void pullStatisticIndexAttributes(Map<String, Object> map) {
+		map.put(ATTR_PRIVILEGES, listPermissions());
+		map.put(COUNT_USERS, userDao.findAll().size());
+		map.put(COUNT_USERS_CONNECTED, userDao.findByIs(1).size());
+		map.put(COUNT_CATEGORIES, categoryDao.findAll().size());
+		map.put(COUNT_PRODCUTS, productDao.findAll().size());
+		map.put(COUNT_CUSTOMERS, customerDao.findAll().size());
 	}
 
 }

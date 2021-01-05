@@ -3,6 +3,7 @@
  */
 package com.erobot.gestion.controllers;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,7 @@ public class UserController extends SecurityController {
 	public static final String ATTR_USER_TO = "userTo";
 	public static final String ATTR_USERS = "users";
 	public static final String ATTR_ROLES = "roles";
-	
+
 	public static final String REQUEST_USER_NAME = "userName";
 
 	protected RoleDao roleDao;
@@ -83,27 +84,36 @@ public class UserController extends SecurityController {
 		if (!checkLogin()) {
 			return MainController.LOGIN;
 		}
+		Map<String, Object> map = new HashMap<>();
 		if (hasPermission() == 2) {
 			User user = new User();
 			int roleId = Integer.parseInt(request.getParameter("role"));
 			if ((userDao.findById(roleId) != null)
 					&& (userDao.findById(roleId).getRole().getRoleUser().equalsIgnoreCase("root"))) {
-				Map<String, Object> map = new HashMap<>();
 				attributeRightsForCurrentUser(map);
 				modelMap.addAllAttributes(map);
 				return MainController.PAGE_403;
 			}
 			user.setUsername(request.getParameter(REQUEST_USER_NAME));
-			if ((userDao.findById(roleId) != null) && (request.getParameter(REQUEST_USER_NAME).equalsIgnoreCase("root"))) {
-				Map<String, Object> map = new HashMap<>();
+			if ((userDao.findById(roleId) != null)
+					&& (request.getParameter(REQUEST_USER_NAME).equalsIgnoreCase("root"))) {
 				attributeRightsForCurrentUser(map);
 				modelMap.addAllAttributes(map);
 				return MainController.PAGE_403;
 			}
-			user.setPassword(request.getParameter("password"));
+			try {
+				user.setPassword(request.getParameter("password"));
+			} catch (NoSuchAlgorithmException e1) {
+				String error = new String("Sorry For this Unexcepted Internal Exception! Please try again");
+				attributeRightsForCurrentUser(map);
+				map.put(MainController.USER, MainController.roleUser);
+				map.put(MainController.ATTR_ERROR, error);
+				map.put(ATTR_USERS, userDao.findAll());
+				modelMap.addAllAttributes(map);
+				return HOME_PAGE_USER;
+			}
 			user.setRole(roleDao.findById(roleId));
 			user.setIs(0);
-			Map<String, Object> map = new HashMap<>();
 			attributeRightsForCurrentUser(map);
 			map.put(MainController.USER, MainController.roleUser);
 			map.put(ATTR_ROLES, roleDao.findAll());
@@ -120,7 +130,6 @@ public class UserController extends SecurityController {
 				return ADD_PAGE_USER;
 			}
 		} else {
-			Map<String, Object> map = new HashMap<>();
 			attributeRightsForCurrentUser(map);
 			modelMap.addAllAttributes(map);
 			return MainController.PAGE_403;
@@ -195,29 +204,37 @@ public class UserController extends SecurityController {
 			modelMap.addAllAttributes(map);
 			return MainController.PAGE_403;
 		}
-
+		Map<String, Object> map = new HashMap<>();
 		if (hasPermission() == 2) {
 			User user = userDao.findById(id);
 			int roleId = Integer.parseInt(request.getParameter("role"));
 			if ((userDao.findById(roleId) != null)
 					&& (userDao.findById(roleId).getRole().getRoleUser().equalsIgnoreCase("root"))) {
-				Map<String, Object> map = new HashMap<>();
 				attributeRightsForCurrentUser(map);
 				modelMap.addAllAttributes(map);
 				return MainController.PAGE_403;
 			}
 			user.setUsername(request.getParameter(REQUEST_USER_NAME));
-			if ((userDao.findById(roleId) != null) && (request.getParameter(REQUEST_USER_NAME).equalsIgnoreCase("root"))) {
-				Map<String, Object> map = new HashMap<>();
+			if ((userDao.findById(roleId) != null)
+					&& (request.getParameter(REQUEST_USER_NAME).equalsIgnoreCase("root"))) {
 				attributeRightsForCurrentUser(map);
 				modelMap.addAllAttributes(map);
 				return MainController.PAGE_403;
 
 			}
-			user.setPassword(request.getParameter("password"));
+			try {
+				user.setPassword(request.getParameter("password"));
+			} catch (NoSuchAlgorithmException e1) {
+				String error = new String("Sorry For this Unexcepted Internal Exception! Please try again");
+				attributeRightsForCurrentUser(map);
+				map.put(MainController.USER, MainController.roleUser);
+				map.put(MainController.ATTR_ERROR, error);
+				map.put(ATTR_USERS, userDao.findAll());
+				modelMap.addAllAttributes(map);
+				return HOME_PAGE_USER;
+			}
 			user.setRole(roleDao.findById(roleId));
 			List<Role> roles = roleDao.findAll();
-			Map<String, Object> map = new HashMap<>();
 			attributeRightsForCurrentUser(map);
 			map.put(ATTR_ROLES, roles);
 			map.put(MainController.USER, MainController.roleUser);
@@ -234,7 +251,6 @@ public class UserController extends SecurityController {
 				return EDIT_PAGE_USER;
 			}
 		} else {
-			Map<String, Object> map = new HashMap<>();
 			attributeRightsForCurrentUser(map);
 			modelMap.addAllAttributes(map);
 			return MainController.PAGE_403;

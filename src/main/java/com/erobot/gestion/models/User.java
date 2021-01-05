@@ -4,6 +4,9 @@
 package com.erobot.gestion.models;
 
 import java.io.Serializable;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -61,10 +64,10 @@ public class User implements Serializable {
 	public User(
 			@Length(min = 4, max = 50) @Pattern(regexp = "[a-zA-Z0-9]*", message = "This field only accepts alphanumeric characters.") String username,
 			@Length(min = 4, max = 50) @Pattern(regexp = "[a-zA-Z0-9]*", message = "This field only accepts alphanumeric characters.") String password,
-			int is, Role role) {
+			int is, Role role) throws NoSuchAlgorithmException {
 		super();
 		this.username = username;
-		this.password = password;
+		this.password = getMD5Hash(password);
 		this.is = is;
 		this.role = role;
 	}
@@ -72,11 +75,11 @@ public class User implements Serializable {
 	public User(int id,
 			@Length(min = 4, max = 50) @Pattern(regexp = "[a-zA-Z0-9]*", message = "This field only accepts alphanumeric characters.") String username,
 			@Length(min = 4, max = 50) @Pattern(regexp = "[a-zA-Z0-9]*", message = "This field only accepts alphanumeric characters.") String password,
-			int is, Role role) {
+			int is, Role role) throws NoSuchAlgorithmException {
 		super();
 		this.id = id;
 		this.username = username;
-		this.password = password;
+		this.password = getMD5Hash(password);
 		this.is = is;
 		this.role = role;
 	}
@@ -111,16 +114,18 @@ public class User implements Serializable {
 
 	/**
 	 * @return the password
+	 * @throws NoSuchAlgorithmException
 	 */
-	public String getPassword() {
-		return password;
+	public String getPassword() throws NoSuchAlgorithmException {
+		return getMD5Hash(password);
 	}
 
 	/**
 	 * @param password the password to set
+	 * @throws NoSuchAlgorithmException
 	 */
-	public void setPassword(String password) {
-		this.password = password;
+	public void setPassword(String password) throws NoSuchAlgorithmException {
+		this.password = getMD5Hash(password);
 	}
 
 	/**
@@ -173,6 +178,21 @@ public class User implements Serializable {
 	public String toString() {
 		return "User [id=" + id + ", username=" + username + ", password=" + password + ", is=" + is + ", role=" + role
 				+ "]";
+	}
+
+	public static String getMD5Hash(String s) throws NoSuchAlgorithmException {
+
+		String result = s;
+		if (s != null) {
+			MessageDigest md = MessageDigest.getInstance("MD5"); // or "SHA-1"
+			md.update(s.getBytes());
+			BigInteger hash = new BigInteger(1, md.digest());
+			result = hash.toString(16);
+			while (result.length() < 32) { // 40 for SHA-1
+				result = "0".concat(result);
+			}
+		}
+		return result;
 	}
 
 }
