@@ -131,7 +131,7 @@ public class MainController extends SecurityController {
 		} catch (NoSuchAlgorithmException e) {
 			String authentification = "authentification failed";
 			modelMap.addAttribute("authentification", authentification);
-			return LOGIN;
+			return REDIRECT + LOGIN;
 		}
 		iCanAccess = user != null;
 		if (iCanAccess) {
@@ -141,11 +141,11 @@ public class MainController extends SecurityController {
 			pullStatisticIndexAttributes(map);
 			map.put(USER, userDao.findById(user.getId()));
 			modelMap.addAllAttributes(map);
-			return INDEX;
+			return REDIRECT + INDEX;
 		} else {
 			String authentification = "authentification failed";
 			modelMap.addAttribute("authentification", authentification);
-			return LOGIN;
+			return REDIRECT + LOGIN;
 		}
 	}
 
