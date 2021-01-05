@@ -43,7 +43,7 @@ public class MainController extends SecurityController {
 	public static final String ATTR_PERMISSION = "permission";
 	public static final String ATTR_TOKEN = "token";
 	public static final String ATTR_PRIVILEGES = "listPrivileges";
-
+	public static final String ATTR_AUTHENTIFICATION = "authentification";
 	public static final String COUNT_USERS = "usersCount";
 	public static final String COUNT_USERS_CONNECTED = "usersConnectedCount";
 	public static final String COUNT_CATEGORIES = "categoriesCount";
@@ -115,7 +115,7 @@ public class MainController extends SecurityController {
 		user.setIs(0);
 		userDao.save(user);
 		String authentification = "Successefull logout";
-		modelMap.addAttribute("authentification", authentification);
+		modelMap.addAttribute(ATTR_AUTHENTIFICATION, authentification);
 		return REDIRECT + LOGIN;
 	}
 
@@ -130,7 +130,7 @@ public class MainController extends SecurityController {
 			user = userDao.findByUsernameAndPassword(username, User.getMD5Hash(password));
 		} catch (NoSuchAlgorithmException e) {
 			String authentification = "authentification failed";
-			modelMap.addAttribute("authentification", authentification);
+			modelMap.addAttribute(ATTR_AUTHENTIFICATION, authentification);
 			return REDIRECT + LOGIN;
 		}
 		iCanAccess = user != null;
@@ -144,7 +144,7 @@ public class MainController extends SecurityController {
 			return REDIRECT + INDEX;
 		} else {
 			String authentification = "authentification failed";
-			modelMap.addAttribute("authentification", authentification);
+			modelMap.addAttribute(ATTR_AUTHENTIFICATION, authentification);
 			return REDIRECT + LOGIN;
 		}
 	}
