@@ -60,7 +60,11 @@ public class CustomerController extends SecurityController {
 		modelMap.addAllAttributes(map);
 		return HOME_PAGE_CUSTOMERS;
 	}
-
+	/**
+	 * 
+	 * @param modelMap
+	 * @return
+	 */
 	@GetMapping(value = "/Customers/addCustomer")
 	public String addCustomer(ModelMap modelMap) {
 		if (!checkLogin()) {
